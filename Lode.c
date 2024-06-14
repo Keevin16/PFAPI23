@@ -79,7 +79,7 @@ int search(Autonomie* node, int key){
     return 1;                   //nodo non trovato, può essere aggiunto
 } 
 
-Autonomie* nodo(Autonomie* node, int key){ //come search ma restituisce il nodo puntato 
+Autonomie* nodo(Autonomie* node, int key){  
     while(node!=NULL){
         if(node->key==key)          
             return node;           
@@ -257,7 +257,7 @@ matr *array=NULL;
     
 char command[19];
 int dist, num_auto,flag;
-int autonomie[511];//stazione non può avere più di 512 veicoli 
+int autonomie[511];
     while (scanf("%s", command)!=EOF) {
         if(strcmp(command, "aggiungi-stazione")==0){
             if(scanf("%d %d", &dist, &num_auto)!=EOF){
@@ -265,7 +265,7 @@ int autonomie[511];//stazione non può avere più di 512 veicoli
                     printf("aggiunta\n");
                     root=Insert(root,dist,NULL);//inserimento stazione.
                     flag=1;
-                }           //NewNode ora avrà il nodo di nostro interesse, quello dove lavoreremo.
+                }
                 else{
                     printf("non aggiunta\n");
                     flag=0;
@@ -287,7 +287,7 @@ int autonomie[511];//stazione non può avere più di 512 veicoli
             }
         }
         else if(strcmp(command,"aggiungi-auto")==0){
-            if(scanf("%d %d", &dist, &num_auto)!=EOF){     //in questo caso num_auto è direttamente l'autonomia
+            if(scanf("%d %d", &dist, &num_auto)!=EOF){
                 NewNode=nodo(root, dist);
                 if(NewNode!=NULL && NewNode->macchine<=512){
                     printf("aggiunta\n");
@@ -304,8 +304,8 @@ int autonomie[511];//stazione non può avere più di 512 veicoli
                 NewNode=nodo(root, dist);
                 if(NewNode!=NULL){  
                     printf("demolita\n");
-                    NewNode->root_ricariche=Eliminazione(NewNode->root_ricariche); //elimino tutte le autonomie
-                    root=SearchDelete(root,NewNode->key); //elimino nodo stazione
+                    NewNode->root_ricariche=Eliminazione(NewNode->root_ricariche);
+                    root=SearchDelete(root,NewNode->key);
                     NewNode->macchine=0;  
                 }
                 else    
@@ -314,10 +314,10 @@ int autonomie[511];//stazione non può avere più di 512 veicoli
         }
 
         else if(strcmp(command, "rottama-auto")==0){
-            if(scanf("%d %d",&dist, &num_auto)!=EOF){//dist è la stazione, num_auto la stazione da eliminare 
+            if(scanf("%d %d",&dist, &num_auto)!=EOF){
                 NewNode=nodo(root,dist);
                 if(NewNode!=NULL){
-                    test=nodo(NewNode->root_ricariche,num_auto);//NEL CASO DOVESSERO ESSERCI PROBLEMI DI TEMPO SI PUÒ SOSTIUIRE TEST CON UN FLAG GLOBALE.
+                    test=nodo(NewNode->root_ricariche,num_auto);
                     if(test!=NULL){
                         printf("rottamata\n");
                         NewNode->root_ricariche=SearchDelete(NewNode->root_ricariche,num_auto);
@@ -331,9 +331,8 @@ int autonomie[511];//stazione non può avere più di 512 veicoli
             }
         }
 
-        else if(strcmp(command, "pianifica-percorso")==0){//fino ad ora ho trattato soo il caso in cui key1<key2!
-            //dovrei provare a unire tutte e due ma se non mi da problemi di tempo o spazio terrò così
-            if(scanf("%d %d", &dist, &num_auto)!=EOF){//partenza e arrivo
+        else if(strcmp(command, "pianifica-percorso")==0){
+            if(scanf("%d %d", &dist, &num_auto)!=EOF){
             int flag=0;
             if(dist<num_auto){
                 flag=contatore(root,dist,num_auto,&flag);
@@ -348,9 +347,6 @@ int autonomie[511];//stazione non può avere più di 512 veicoli
                 inorder(root,num_auto,dist,array,&flag);
             }
 
-            
-
-//per il problema di sopra della matrice nella funzione, dovrò scriverlo nel main 
                                     //ricerca
     info *lista;
     lista=(info*)malloc((flag)*sizeof(info));
@@ -365,22 +361,21 @@ int autonomie[511];//stazione non può avere più di 512 veicoli
 //                                                                        Da Sx a Dx
 
 if(dist<num_auto){
-        lista[0].path=0;//si inizializza la prima stazione a 0
+        lista[0].path=0;
 
-        for(int i=0;i<flag-1 && uscita>0;i++){                                  //per non leggere anche l'ultima stazione
-            for(int j=i+1;j<flag;j++){                              //così inizia direttamente dalla stazione successiva  
-                if(array[i].key+array[i].max>=array[j].key && lista[j].path>lista[i].path+j){ 
-// 1)Fondamentale per capire se c'è il percorso da un nodo ad un altro      2)Se il percorso vecchio è maggiore di quello nuovo
-                    lista[j].from=i;                                //l'autonomia più vicina all'origine
-                    lista[j].path=lista[i].path+j;                  //aggiornamento lunghezza percorso     
+        for(int i=0;i<flag-1 && uscita>0;i++){
+            for(int j=i+1;j<flag;j++){
+                if(array[i].key+array[i].max>=array[j].key && lista[j].path>lista[i].path+j){
+                    lista[j].from=i;
+                    lista[j].path=lista[i].path+j;
                 }
-                else if(array[i].key+array[i].max<array[j].key){//abbiamo superato il nostro max, non ha più senso continuare
+                else if(array[i].key+array[i].max<array[j].key){
                     if(i==0 && j==1)
                         uscita=0;
                     break;
                 }
             }
-        }   //non gestisco bene l'uscita se c'è qualcosa che non va, sistemare bene sta situzione qua.
+        }
 
 //                                              STAMPA PERCORSO PRIMO CASO
     int percorso[flag];
@@ -413,7 +408,6 @@ if(dist<num_auto){
 }   
 //                                                                   Da Dx a Sx
 else{
-//int stato=0;
     lista[flag- 1].path=0;
     lista[flag-1].stazioni=0;
          for(int i=flag-1;i>=0;i--){
@@ -434,21 +428,15 @@ else{
                     break;
                 }
                 else if(lista[i].path==(lista[i].path+j) && lista[j].from>i && lista[j].stazioni==(lista[i].stazioni+1)){
-        //prima condizione per vedere se è l'elemento 0 dell'array, 2) per vedere se è più vicino allo 0
-                   
-                lista[j].from=i;
+                    lista[j].from=i;
                 }
             }
         }
-    
-  //  for(int i=0;i<flag;i++)
-    //   printf("id %d, stazione %d, max  %d, path %d e from %d, attraversate %d \n",i, array[i].key,array[i].max,lista[i].path, lista[i].from, lista[i].stazioni);
-
 //                                              STAMPA PERCORSO SECONDO CASO 
     int i=0,count=0;
     int percorso[flag];
         
-    if(lista[0].from == -1) //si parte dalla fine che è il nodo 0 e si va a ritroso
+    if(lista[0].from == -1)
         printf("nessun percorso\n");
     else{
         percorso[count]=0;
@@ -457,7 +445,7 @@ else{
             percorso[count]=lista[i].from;
             count++;
             i=lista[i].from;
-        }while(i>0);// alla fine di questo ciclo l'ultimo elemento dell'array sarà quello iniziale, dist!(quello più grande)
+        }while(i>0);
 count-=2;
         
         if(array[percorso[count]].key!=dist)
@@ -478,57 +466,3 @@ count-=2;
     }
 return 0;
 }
-/*
-cose utili
-                short int grafo[flag][flag];
-
-//PEZZO DI FUNZIONE CREAZIONE MATRICE
-            int num=0;
-            for(int i=0;i<flag;i++){
-                for(int j=0;j<flag;j++){
-                if(j==0)
-                    num++;
-                    if(array[i].key+array[i].max>=array[j].key && j>=num)
-                        grafo[i][j]=1;
-                    else   
-                        grafo[i][j]=0;
-                }
-            }
-            for(int i=0;i<flag;i++){
-                for(int j=0;j<flag;j++)
-                    printf("%d ",grafo[i][j]);
-                printf("\n");
-            }
-for(int i=0;i<flag;i++)
-    printf("Key %d e Max: %d \n", array[i].key, array[i].max);
-
-  printf("la flag e\' %d\n", flag);
-        for(int i=0;i<flag;i++)
-            printf("id %d, stazione %d, max  %d, path %d e from %d \n",i, array[i].key,array[i].max,lista[i].path, lista[i].from);
-
-
- for(int i=flag-1;i>=0;i--){
-            for(int j=i-1;j>=0;j--){
-                if(array[i].key-array[i].max<=array[j].key && lista[j].path>=lista[i].path+j){
-
-                    if(lista[j].path==(lista[i].path+j) && lista[j].from>i && lista[j].stazioni==(lista[i].stazioni+1)){
-                        lista[j].stazioni=lista[i].stazioni+1;
-                        lista[j].from=1;
-                    }
-                    else{
-                        lista[j].from=i;
-                        lista[j].path=lista[i].path+j;
-                        lista[j].stazioni=lista[i].stazioni+1;
-                    }
-                }
-
-                else if(array[i].key-array[i].max>array[j].key)
-                    break;
-                
-                else if(lista[j].path==(lista[i].path+j) && lista[j].from>i && lista[j].stazioni==(lista[i].stazioni+1)){
-                    lista[j].stazioni=lista[i].stazioni+1;
-                    lista[j].from=1;
-                    }
-            }
-        }
-}*/
